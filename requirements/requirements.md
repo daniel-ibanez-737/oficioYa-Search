@@ -81,3 +81,15 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 | **Actor** | *Contratante* |
 | **Flujo principal** | 1. El contratante activa el filtro "disponible ahora".<br>2. El sistema consulta solo trabajadores en ese estado en tiempo real. |
 | **Poscondiciones** | *Se muestra únicamente la lista de trabajadores disponibles en el momento de la consulta.* |
+
+### 2.6 Requerimiento Funcional 6 
+
+| Campo | Descripción |
+|------|-------------|
+| **ID** | RF-06 |
+| **Nombre del requerimiento** | Búsqueda por categoría u oficio |
+| **Descripción** | *El sistema debe permitir al contratante buscar trabajadores mediante la selección de una categoría u oficio específico"* |
+| **Precondiciones** | *El contratante debe estar autenticado* |
+| **Actor** | *Contratante* |
+| **Flujo principal** | 1. El contratante accede a la opción de búsqueda. <br>2. Selecciona una categoría u oficio de la lista disponible. <br>3. El sistema consulta los trabajadores asociados a la categoría u oficio seleccionada. <br>4. El sistema muestra los resultados encontrados. |
+| **Poscondiciones** | *Se presenta una lista de trabajadores correspondiente a la categoría u oficio seleccionado.* |
