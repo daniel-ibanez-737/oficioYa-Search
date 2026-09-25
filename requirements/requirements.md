@@ -19,7 +19,6 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 2. Cobertura de pruebas unitarias mínima del 80%.
 3. La interfaz de búsqueda debe ser responsive.
 4. El sistema debe registrar logs de cada búsqueda realizada.
-5. La respuesta a una búsqueda, incluyendo la interpretación por IA, no debe tardar más de 5 segundos. (borrador, validar con PO)
 
 ## 2. Diagramas de caso de uso
 
