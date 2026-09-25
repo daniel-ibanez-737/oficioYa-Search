@@ -11,6 +11,7 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 3. Permitir filtrar los resultados por zona, precio aproximado, disponibilidad y calificación mínima.
 4. Ordenar los resultados por reputación del trabajador, sin que el pago influya en el orden.
 5. Permitir consultar únicamente los trabajadores marcados como "disponible ahora".
+6. Permitir realizar búsquedas de trabajadores por categoría u oficio.
 
 ### 1.2 Requerimientos no funcionales
 
