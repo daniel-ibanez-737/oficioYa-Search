@@ -32,7 +32,6 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 | **Precondiciones** | *El contratante debe estar autenticado* |
 | **Actor** | *Contratante* |
 | **Flujo principal** | 1. El contratante accede a la opción de búsqueda.<br>2. Escribe una descripción libre.<br>3. El sistema envía el texto al caso de uso de interpretación. |
-| **Diagrama de caso de uso** | *Actor "Contratante" → óvalo "Describir necesidad", dentro del recuadro del sistema de Search* |
 | **Poscondiciones** | *La descripción queda lista para ser interpretada por el componente de IA.* |
 
 ### 2.2 Requerimiento Funcional 2
@@ -45,7 +44,6 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 | **Precondiciones** | *Debe existir una descripción ingresada (RF-01)* |
 | **Actor** | *Contratante (indirectamente, vía el sistema)* |
 | **Flujo principal** | 1. El sistema envía la descripción a Gemini.<br>2. Gemini identifica oficio y palabras clave.<br>3. El sistema traduce esa interpretación en criterios de búsqueda. |
-| **Diagrama de caso de uso** | *Actor "Contratante" → óvalo "Interpretar con IA", dentro del recuadro del sistema de Search* |
 | **Poscondiciones** | *Se generan los criterios de búsqueda listos para ejecutar la consulta.* |
 
 ### 2.3 Requerimiento Funcional 3
@@ -58,7 +56,6 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 | **Precondiciones** | *Debe existir una búsqueda previa ejecutada* |
 | **Actor** | *Contratante* |
 | **Flujo principal** | 1. El contratante aplica uno o más filtros.<br>2. El sistema recalcula la lista de trabajadores que cumplen los filtros. |
-| **Diagrama de caso de uso** | *Actor "Contratante" → óvalo "Filtrar resultados", dentro del recuadro del sistema de Search* |
 | **Poscondiciones** | *El contratante visualiza una lista filtrada.* |
 
 ### 2.4 Requerimiento Funcional 4
@@ -71,7 +68,6 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 | **Precondiciones** | *Debe existir una lista de resultados* |
 | **Actor** | *Contratante* |
 | **Flujo principal** | 1. El sistema toma la lista de resultados.<br>2. Ordena de mayor a menor calificación promedio.<br>3. Ignora cualquier parámetro de pago. |
-| **Diagrama de caso de uso** | *Actor "Contratante" → óvalo "Ordenar por reputación", dentro del recuadro del sistema de Search* |
 | **Poscondiciones** | *El contratante ve los resultados ordenados exclusivamente por reputación.* |
 
 ### 2.5 Requerimiento Funcional 5
@@ -84,5 +80,4 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 | **Precondiciones** | *El contratante debe estar autenticado* |
 | **Actor** | *Contratante* |
 | **Flujo principal** | 1. El contratante activa el filtro "disponible ahora".<br>2. El sistema consulta solo trabajadores en ese estado en tiempo real. |
-| **Diagrama de caso de uso** | *Actor "Contratante" → óvalo "Ver disponibles ahora", dentro del recuadro del sistema de Search* |
 | **Poscondiciones** | *Se muestra únicamente la lista de trabajadores disponibles en el momento de la consulta.* |
