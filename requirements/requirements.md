@@ -15,7 +15,6 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 
 ### 1.2 Requerimientos no funcionales
 
-1. Todos los endpoints deben validar el token JWT.
 2. Cobertura de pruebas unitarias mínima del 80%.
 3. La interfaz de búsqueda debe ser responsive.
 4. El sistema debe registrar logs de cada búsqueda realizada.
