@@ -6,18 +6,23 @@ El sistema de Search (OficioYa) debe tener los siguientes requerimientos:
 
 ### 1.1 Requerimientos funcionales
 
-1. Permitir al contratante ingresar una descripción en lenguaje natural del servicio que necesita.
-2. Interpretar, mediante un componente de Inteligencia Artificial, la descripción para identificar el oficio y los criterios de búsqueda.
-3. Permitir filtrar los resultados por zona, precio aproximado, disponibilidad y calificación mínima.
-4. Ordenar los resultados por reputación del trabajador, sin que el pago influya en el orden.
-5. Permitir consultar únicamente los trabajadores marcados como "disponible ahora".
-6. Permitir realizar búsquedas de trabajadores por categoría u oficio.
+1. El sistema deberá permitir al contratante describir en lenguaje natural el servicio que necesita.
+2. El sistema deberá analizar la descripción ingresada e identificar información relevante para determinar el oficio o servicio solicitado.
+3. El sistema deberá permitir buscar trabajadores mediante una categoría u oficio específico.
+4. El sistema deberá permitir filtrar los trabajadores encontrados por zona, tarifa aproximada, disponibilidad y calificación mínima.
+5. El sistema deberá permitir filtrar trabajadores que se encuentren marcados como disponibles en el momento de la búsqueda.
+6. El sistema deberá permitir utilizar varios filtros simultáneamente para refinar los resultados.
+7. El sistema deberá ordenar los trabajadores encontrados de acuerdo con su reputación, sin utilizar pagos como criterio de posicionamiento.
+8. Search deberá obtener de otros dominios la información necesaria para realizar la búsqueda sin convertirse en propietario de dicha información.
 
 ### 1.2 Requerimientos no funcionales
 
 1. Cobertura de pruebas unitarias mínima del 80%.
 2. La interfaz de búsqueda debe ser responsive.
-3. El sistema debe registrar logs de cada búsqueda realizada.
+3. El sistema deberá proteger la información privada de los usuarios y evitar que datos como correo o teléfono sean expuestos durante las búsquedas.
+4. El sistema deberá validar la información ingresada en las búsquedas antes de procesarla o enviarla al servicio de inteligencia artificial.
+5. Los fallos en la integración con el servicio de inteligencia artificial no deberán modificar ni corromper información de otros dominios.
+6. El dominio deberá registrar mediante logging los errores relevantes ocurridos durante búsquedas e integraciones.
 
 ## 2. Diagramas de caso de uso
 
