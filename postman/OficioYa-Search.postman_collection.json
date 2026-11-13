@@ -1,0 +1,397 @@
+{
+  "info": {
+    "name": "OficioYa · Search (Squad 5)",
+    "description": "Casos de aceptación del sprint 3 de Search (Squad 5).\n\nCómo usarla:\n1. Levantar el servicio: `./mvnw spring-boot:run -Dspring-boot.run.profiles=demo` (perfil `demo`: datos simulados, sin depender de otros servicios).\n2. Ejecutar la colección completa (Run collection). Los JWT de cada rol se generan solos en el pre-request con el secreto de desarrollo (`jwtSecret`).\n3. Para apuntar a otro entorno, cambiar `searchUrl` y `jwtSecret`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Genera JWT HS256 de desarrollo para cada rol (mismo secreto que application.yml).",
+          "// Así no hay que pegar tokens a mano. En producción los emite Identity (Squad 1).",
+          "const cripto = require('crypto-js');",
+          "function b64url(palabras) {",
+          "    return cripto.enc.Base64.stringify(palabras).replace(/=+$/, '').replace(/\\+/g, '-').replace(/\\//g, '_');",
+          "}",
+          "function token(sub, rol) {",
+          "    const ahora = Math.floor(Date.now() / 1000);",
+          "    const cabecera = b64url(cripto.enc.Utf8.parse(JSON.stringify({ alg: 'HS256', typ: 'JWT' })));",
+          "    const cuerpo = b64url(cripto.enc.Utf8.parse(JSON.stringify({ sub: String(sub), roles: [rol], iat: ahora, exp: ahora + 3600 })));",
+          "    const firma = b64url(cripto.HmacSHA256(cabecera + '.' + cuerpo, pm.collectionVariables.get('jwtSecret')));",
+          "    return cabecera + '.' + cuerpo + '.' + firma;",
+          "}",
+          "pm.collectionVariables.set('token_contratante', token(pm.collectionVariables.get('contratanteId'), 'ROLE_CONTRATANTE'));",
+          "pm.collectionVariables.set('token_trabajador', token(pm.collectionVariables.get('trabajadorId'), 'ROLE_TRABAJADOR'));",
+          "pm.collectionVariables.set('token_admin', token(1, 'ROLE_ADMINISTRADOR'));",
+          "pm.collectionVariables.set('token_sistema', token(0, 'ROLE_SISTEMA'));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "searchUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "jwtSecret",
+      "value": "cambiar-este-secreto-de-desarrollo-de-al-menos-32-bytes"
+    },
+    {
+      "key": "trabajadorId",
+      "value": "101"
+    },
+    {
+      "key": "contratanteId",
+      "value": "201"
+    }
+  ],
+  "item": [
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "RF-03 · Catálogo de oficios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_contratante}}"
+              }
+            ],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/oficios",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "oficios"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Hay oficios', () => pm.expect(pm.response.json().length).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-03 · Buscar por oficio (principal o secundario), ordenado por reputación",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_contratante}}"
+              }
+            ],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/oficios/1/trabajadores",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "oficios",
+                "1",
+                "trabajadores"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json().resultados;",
+                  "pm.test('Ordenados por reputación', () => { for (let i = 1; i < r.length; i++) pm.expect(r[i - 1].calificacionPromedio).to.be.at.least(r[i].calificacionPromedio); });",
+                  "pm.test('Sin correo ni teléfono', () => r.forEach(t => { pm.expect(t).to.not.have.property('correo'); pm.expect(t).to.not.have.property('telefono'); }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-04/05/06 · Filtros combinados (precio, disponibilidad semanal, disponible ahora)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_contratante}}"
+              }
+            ],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/oficios/1/trabajadores?precioMaximo=50000&soloDisponibleAhora=true&diaSemana=MONDAY&hora=10:00",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "oficios",
+                "1",
+                "trabajadores"
+              ],
+              "query": [
+                {
+                  "key": "precioMaximo",
+                  "value": "50000"
+                },
+                {
+                  "key": "soloDisponibleAhora",
+                  "value": "true"
+                },
+                {
+                  "key": "diaSemana",
+                  "value": "MONDAY"
+                },
+                {
+                  "key": "hora",
+                  "value": "10:00"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json().resultados;",
+                  "pm.test('Todos cumplen los filtros', () => r.forEach(t => { pm.expect(t.tarifaAproximada).to.be.at.most(50000); pm.expect(t.disponibleAhora).to.be.true; }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-01/02 · Lenguaje natural: identifica el oficio y sugiere los mejores",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_contratante}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/lenguaje-natural",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "lenguaje-natural"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"Necesito alguien que arregle una gotera en el baño\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test('Identificó Plomería', () => { pm.expect(b.estado).to.eql('OFICIO_IDENTIFICADO'); pm.expect(b.oficioIdentificado).to.eql('Plomería'); });",
+                  "pm.test('Devuelve sugerencias', () => pm.expect(b.resultados.length).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RF-02 · Lenguaje natural: si no entiende, pide más detalle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_contratante}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/lenguaje-natural",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "lenguaje-natural"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"necesito ayuda con algo\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Pide más detalle', () => pm.expect(pm.response.json().estado).to.eql('REQUIERE_MAS_DETALLE'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Validación · Texto vacío → 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token_contratante}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/lenguaje-natural",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "lenguaje-natural"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Seguridad · Sin JWT → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{searchUrl}}/api/v1/search/oficios",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "search",
+                "oficios"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Documentación (Swagger)",
+      "item": [
+        {
+          "name": "Swagger · Search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{searchUrl}}/v3/api-docs",
+              "host": [
+                "{{searchUrl}}"
+              ],
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Documenta el JWT', () => pm.expect(pm.response.json().components.securitySchemes).to.have.property('bearer-jwt'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
