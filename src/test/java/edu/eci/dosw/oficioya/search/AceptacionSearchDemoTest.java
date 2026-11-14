@@ -1,5 +1,9 @@
 package edu.eci.dosw.oficioya.search;
 
+import java.util.UUID;
+
+import static edu.eci.dosw.oficioya.search.IdsDePrueba.id;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -55,7 +59,7 @@ class AceptacionSearchDemoTest {
 
     @Test
     void rf3BuscarPorOficioIncluyeOficiosSecundarios() throws Exception {
-        mvc.perform(get("/api/v1/search/oficios/2/trabajadores").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(2) + "/trabajadores").with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total").value(2))
                 .andExpect(jsonPath("$.resultados[0].nombreCompleto").value("Lucía Fernández"))
@@ -64,7 +68,7 @@ class AceptacionSearchDemoTest {
 
     @Test
     void rf4Rf5Rf6FiltrosCombinados() throws Exception {
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores")
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores")
                         .param("precioMaximo", "50000")
                         .param("soloDisponibleAhora", "true")
                         .param("diaSemana", "MONDAY").param("hora", "10:00")
@@ -76,7 +80,7 @@ class AceptacionSearchDemoTest {
 
     @Test
     void ordenaPorCalificacionDeMenorAMayor() throws Exception {
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").param("orden", "MENOR_A_MAYOR").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").param("orden", "MENOR_A_MAYOR").with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultados[0].nombreCompleto").value("Andrea Gómez"))
                 .andExpect(jsonPath("$.resultados[1].nombreCompleto").value("Jorge Rodríguez"))
@@ -86,18 +90,18 @@ class AceptacionSearchDemoTest {
 
     @Test
     void filtraPorFranjaHoraria() throws Exception {
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").param("franjaHoraria", "NOCHE").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").param("franjaHoraria", "NOCHE").with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total").value(1))
                 .andExpect(jsonPath("$.resultados[0].nombreCompleto").value("Jorge Rodríguez"));
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").param("franjaHoraria", "MADRUGADA").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").param("franjaHoraria", "MADRUGADA").with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total").value(0));
     }
 
     @Test
     void franjaHorariaInvalidaResponde400() throws Exception {
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").param("franjaHoraria", "MEDIODIA").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").param("franjaHoraria", "MEDIODIA").with(jwt()))
                 .andExpect(status().isBadRequest());
     }
 

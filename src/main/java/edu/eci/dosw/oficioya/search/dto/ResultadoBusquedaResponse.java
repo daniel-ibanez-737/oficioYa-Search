@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.dto;
 
+import java.util.UUID;
+
 import java.math.BigDecimal;
 
 import edu.eci.dosw.oficioya.search.domain.ResultadoBusqueda;
@@ -8,7 +10,7 @@ import edu.eci.dosw.oficioya.search.domain.ResultadoBusqueda;
  * Trabajador en el listado de resultados. Search solo devuelve el listado (no el perfil completo)
  * y nunca expone correo ni teléfono.
  */
-public record ResultadoBusquedaResponse(int posicion, Long trabajadorId, String nombreCompleto, String fotoPerfilUrl,
+public record ResultadoBusquedaResponse(int posicion, UUID trabajadorId, String nombreCompleto, String fotoPerfilUrl,
                                         String oficio, String zona, BigDecimal tarifaAproximada,
                                         double calificacionPromedio, int totalResenas, int trabajosCompletados,
                                         boolean disponibleAhora) {

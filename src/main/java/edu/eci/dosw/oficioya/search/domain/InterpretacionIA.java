@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.domain;
 
+import java.util.UUID;
+
 /**
  * Interpretación de la descripción en lenguaje natural.
  * La IA solo identifica el oficio (decisión de la profesora); no extrae zona, precio ni disponibilidad.
@@ -10,14 +12,14 @@ package edu.eci.dosw.oficioya.search.domain;
  * @param estado             resultado de la interpretación
  * @param mensajeAclaracion  mensaje para pedir más detalle al contratante cuando no se identificó el oficio
  */
-public record InterpretacionIA(String oficioIdentificado, Long oficioId, double nivelConfianza,
+public record InterpretacionIA(String oficioIdentificado, UUID oficioId, double nivelConfianza,
                                EstadoInterpretacion estado, String mensajeAclaracion) {
 
     public static final String MENSAJE_MAS_DETALLE =
             "No logramos identificar el oficio que necesitas. Cuéntanos con más detalle qué problema tienes "
                     + "(por ejemplo: \"tengo una fuga en el lavamanos\").";
 
-    public static InterpretacionIA identificado(Long oficioId, String oficio, double nivelConfianza) {
+    public static InterpretacionIA identificado(UUID oficioId, String oficio, double nivelConfianza) {
         return new InterpretacionIA(oficio, oficioId, nivelConfianza, EstadoInterpretacion.OFICIO_IDENTIFICADO, null);
     }
 

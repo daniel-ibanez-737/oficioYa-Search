@@ -1,5 +1,9 @@
 package edu.eci.dosw.oficioya.search.controller;
 
+import java.util.UUID;
+
+import static edu.eci.dosw.oficioya.search.IdsDePrueba.id;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -42,7 +46,7 @@ class BusquedaControllerTest {
     private BusquedaService servicio;
 
     private static BusquedaResponse respuestaConUnResultado() {
-        ResultadoBusquedaResponse r = new ResultadoBusquedaResponse(1, 101L, "Carlos", null, "Plomería", "Chapinero",
+        ResultadoBusquedaResponse r = new ResultadoBusquedaResponse(1, id(101), "Carlos", null, "Plomería", "Chapinero",
                 BigDecimal.valueOf(45000), 4.9, 128, 50, true);
         return new BusquedaResponse(TipoBusqueda.OFICIO, null, null, null, 1, List.of(r));
     }
@@ -56,7 +60,7 @@ class BusquedaControllerTest {
 
     @Test
     void conJwtValidoResponde200() throws Exception {
-        when(servicio.consultarOficios()).thenReturn(List.of(new OficioDTO(1L, "Plomería", null)));
+        when(servicio.consultarOficios()).thenReturn(List.of(new OficioDTO(id(1), "Plomería", null)));
         mvc.perform(get("/api/v1/search/oficios").with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nombre").value("Plomería"));
@@ -69,7 +73,7 @@ class BusquedaControllerTest {
         when(servicio.buscarPorOficio(eq("contratante-1"), any(CriteriosBusqueda.class)))
                 .thenReturn(respuestaConUnResultado());
 
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores")
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores")
                         .param("precioMinimo", "30000").param("precioMaximo", "60000")
                         .param("diaSemana", "MONDAY").param("hora", "09:00")
                         .param("soloDisponibleAhora", "true").param("calificacionMinima", "4")
@@ -84,14 +88,14 @@ class BusquedaControllerTest {
 
     @Test
     void calificacionMinimaFueraDeRangoResponde400() throws Exception {
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").param("calificacionMinima", "7").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").param("calificacionMinima", "7").with(jwt()))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void criteriosIncoherentesResponden400() throws Exception {
         when(servicio.buscarPorOficio(any(), any())).thenThrow(new SolicitudInvalidaException("rango inválido"));
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").with(jwt()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("rango inválido"));
     }
@@ -99,7 +103,7 @@ class BusquedaControllerTest {
     @Test
     void falloDeIntegracionResponde502() throws Exception {
         when(servicio.buscarPorOficio(any(), any())).thenThrow(new IntegracionException("caída", new RuntimeException()));
-        mvc.perform(get("/api/v1/search/oficios/1/trabajadores").with(jwt()))
+        mvc.perform(get("/api/v1/search/oficios/" + id(1) + "/trabajadores").with(jwt()))
                 .andExpect(status().isBadGateway());
     }
 

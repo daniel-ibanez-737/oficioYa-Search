@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.service;
 
+import java.util.UUID;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +99,7 @@ public class BusquedaService {
         List<TrabajadorDTO> trabajadores = orquestadorClient.buscarTrabajadoresActivos(criterios.oficioId()).stream()
                 .filter(t -> t.ofrece(criterios.oficioId()))
                 .toList();
-        Map<Long, ReputacionDTO> reputaciones = orquestadorClient.obtenerReputaciones(
+        Map<UUID, ReputacionDTO> reputaciones = orquestadorClient.obtenerReputaciones(
                 trabajadores.stream().map(TrabajadorDTO::id).toList());
         FiltroBusqueda filtro = criterios.construirFiltro();
         List<ResultadoBusqueda> filtrados = trabajadores.stream()
@@ -138,7 +140,7 @@ public class BusquedaService {
         return limpio;
     }
 
-    private static void registrarLog(String usuario, TipoBusqueda tipo, Long oficioId, int total, long inicio) {
+    private static void registrarLog(String usuario, TipoBusqueda tipo, UUID oficioId, int total, long inicio) {
         Busqueda busqueda = new Busqueda(usuario, tipo, oficioId, total, System.currentTimeMillis() - inicio,
                 LocalDateTime.now());
         log.info("Búsqueda realizada: {}", busqueda.resumen());

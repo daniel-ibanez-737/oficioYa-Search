@@ -42,7 +42,7 @@ docker run --rm -v "$PWD":/app -w /app maven:3.9-eclipse-temurin-21 mvn verify
 ## Variables de entorno
 | Variable | Uso | Valor por defecto (desarrollo) |
 |---|---|---|
-| `JWT_SECRET` | Secreto para validar el JWT | valor de desarrollo |
+| `JWT_SECRET` | Secreto compartido con Identity, en Base64 (igual que Identity) | valor de desarrollo |
 | `JWT_ROLES_CLAIM` | Claim del JWT con los roles | `roles` |
 | `ORQUESTADOR_URL` | URL del Orchestrator | `http://localhost:8080` |
 | `IA_MODO` | `simulado` (palabras clave, sin IA) u `orquestador` (IA real a través del Orchestrator) | `simulado` |
@@ -51,7 +51,7 @@ docker run --rm -v "$PWD":/app -w /app maven:3.9-eclipse-temurin-21 mvn verify
 | Método | Ruta | Descripción |
 |---|---|---|
 | GET | `/api/v1/search/oficios` | Catálogo de oficios. |
-| GET | `/api/v1/search/oficios/{oficioId}/trabajadores` | Búsqueda por oficio (principal o secundario), ordenada por reputación. |
+| GET | `/api/v1/search/oficios/{oficioId}/trabajadores` | Búsqueda por oficio (principal o secundario), ordenada por reputación. `oficioId` es el UUID del oficio en Worker. |
 | POST | `/api/v1/search/lenguaje-natural` | Búsqueda describiendo la necesidad: identifica el oficio y sugiere los trabajadores de mayor reputación. |
 
 **Filtros opcionales** (query params en la búsqueda por oficio, o el objeto `criterios` en lenguaje natural), combinables entre sí:
@@ -69,6 +69,20 @@ Si la IA no identifica el oficio con suficiente confianza, la respuesta tiene `e
 Los resultados nunca incluyen correo ni teléfono del trabajador. Search no guarda nada: cada búsqueda solo deja un registro en el log.
 
 Errores: `400` validación, `401` sin JWT, `502` falla al consultar el Orchestrator.
+
+## De dónde salen los datos (vía Orchestrator)
+| Dominio | Ruta (configurable en `oficioya.orquestador.rutas`) |
+|---|---|
+| Worker | `GET /api/v1/workers?tradeId={uuid}` (solo trabajadores activos) y `GET /api/v1/trades` |
+| Reputation | `GET /api/v1/reputation/reputaciones?trabajadorIds=...` |
+
+Worker todavía no entrega nombre, foto, zona ni trabajos cumplidos del trabajador (vienen de Users y Service),
+así que esos campos llegan vacíos hasta que se integren.
+
+## Formato del JWT (acordado con Identity, Squad 1)
+- Firma HS256 con el secreto decodificado de Base64.
+- `sub`: id (UUID) del usuario.
+- `roles`: lista sin prefijo (`CONTRATANTE`, `TRABAJADOR`, `ADMIN`, `SISTEMA`).
 
 ## Perfil `demo`
 Para probar sin el Orchestrator, con 6 oficios y 7 trabajadores de ejemplo:

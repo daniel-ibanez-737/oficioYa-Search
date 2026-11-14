@@ -1,5 +1,9 @@
 package edu.eci.dosw.oficioya.search.domain;
 
+import java.util.UUID;
+
+import static edu.eci.dosw.oficioya.search.IdsDePrueba.id;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
@@ -24,7 +28,7 @@ class FiltrosTest {
                                                 boolean disponibleAhora) {
         List<FranjaDisponibilidad> lunes = List.of(
                 new FranjaDisponibilidad(DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(12, 0)));
-        return new ResultadoBusqueda(1L, "Ana", null, "Plomería", "Chapinero", barrios,
+        return new ResultadoBusqueda(id(1), "Ana", null, "Plomería", "Chapinero", barrios,
                 tarifa == null ? null : new BigDecimal(tarifa), calificacion, 10, 5, disponibleAhora, lunes);
     }
 

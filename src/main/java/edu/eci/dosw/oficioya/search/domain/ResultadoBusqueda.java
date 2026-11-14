@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.domain;
 
+import java.util.UUID;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
@@ -10,7 +12,7 @@ import java.util.Set;
  */
 public class ResultadoBusqueda {
 
-    private final Long trabajadorId;
+    private final UUID trabajadorId;
     private final String nombreCompleto;
     private final String fotoPerfilUrl;
     private final String oficio;
@@ -25,7 +27,7 @@ public class ResultadoBusqueda {
     private int posicion;
 
     @SuppressWarnings("java:S107") // el resultado agrupa los datos que se muestran en el listado
-    public ResultadoBusqueda(Long trabajadorId, String nombreCompleto, String fotoPerfilUrl, String oficio, String zona,
+    public ResultadoBusqueda(UUID trabajadorId, String nombreCompleto, String fotoPerfilUrl, String oficio, String zona,
                              Set<Long> barrioIds, BigDecimal tarifaAproximada, double calificacionPromedio,
                              int totalResenas, int trabajosCompletados, boolean disponibleAhora,
                              List<FranjaDisponibilidad> disponibilidad) {
@@ -47,7 +49,7 @@ public class ResultadoBusqueda {
         this.posicion = posicion;
     }
 
-    public Long getTrabajadorId() {
+    public UUID getTrabajadorId() {
         return trabajadorId;
     }
 

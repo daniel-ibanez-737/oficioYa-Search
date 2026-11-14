@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.client;
 
+import java.util.UUID;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,7 @@ public interface OrquestadorClient {
     /**
      * Trabajadores ACTIVO que ofrecen el oficio (principal o secundario). Nunca incluye pausados ni inactivos.
      */
-    List<TrabajadorDTO> buscarTrabajadoresActivos(Long oficioId);
+    List<TrabajadorDTO> buscarTrabajadoresActivos(UUID oficioId);
 
     /**
      * Catálogo de oficios de Worker.
@@ -27,7 +29,7 @@ public interface OrquestadorClient {
     /**
      * Reputación de cada trabajador, indexada por su id.
      */
-    Map<Long, ReputacionDTO> obtenerReputaciones(Collection<Long> trabajadorIds);
+    Map<UUID, ReputacionDTO> obtenerReputaciones(Collection<UUID> trabajadorIds);
 
     /**
      * Envía un prompt a la IA y devuelve su respuesta en texto.
