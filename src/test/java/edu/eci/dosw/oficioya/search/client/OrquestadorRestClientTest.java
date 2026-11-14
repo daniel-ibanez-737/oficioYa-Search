@@ -144,9 +144,11 @@ class OrquestadorRestClientTest {
         servidor.expect(requestTo(BASE + "/api/v1/trades")).andRespond(withServerError());
         servidor.expect(requestTo(BASE + "/api/v1/reputation/reputaciones?trabajadorIds=" + id(1))).andRespond(withServerError());
         servidor.expect(requestTo(BASE + "/api/ia/interpretaciones")).andRespond(withServerError());
-        assertThatThrownBy(() -> cliente.buscarTrabajadoresActivos(id(1))).isInstanceOf(IntegracionException.class);
+        UUID id1 = id(1);
+        assertThatThrownBy(() -> cliente.buscarTrabajadoresActivos(id1)).isInstanceOf(IntegracionException.class);
         assertThatThrownBy(() -> cliente.obtenerOficios()).isInstanceOf(IntegracionException.class);
-        assertThatThrownBy(() -> cliente.obtenerReputaciones(List.of(id(1)))).isInstanceOf(IntegracionException.class);
+        List<UUID> ids1 = List.of(id(1));
+        assertThatThrownBy(() -> cliente.obtenerReputaciones(ids1)).isInstanceOf(IntegracionException.class);
         assertThatThrownBy(() -> cliente.solicitarInterpretacionIA("p")).isInstanceOf(IntegracionException.class);
     }
 }

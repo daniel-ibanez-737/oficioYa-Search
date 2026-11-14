@@ -1,6 +1,5 @@
 package edu.eci.dosw.oficioya.search;
 
-import java.util.UUID;
 
 import static edu.eci.dosw.oficioya.search.IdsDePrueba.id;
 

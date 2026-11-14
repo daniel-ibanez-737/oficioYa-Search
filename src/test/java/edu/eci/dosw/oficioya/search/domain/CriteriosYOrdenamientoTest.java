@@ -45,14 +45,16 @@ class CriteriosYOrdenamientoTest {
 
     @Test
     void rechazaRangoDePrecioInvertido() {
-        assertThatThrownBy(() -> new CriteriosBusqueda(id(1), null, BigDecimal.TEN, BigDecimal.ONE, null, null, false, null))
+        UUID id1 = id(1);
+        assertThatThrownBy(() -> new CriteriosBusqueda(id1, null, BigDecimal.TEN, BigDecimal.ONE, null, null, false, null))
                 .isInstanceOf(SolicitudInvalidaException.class)
                 .hasMessageContaining("precio mínimo");
     }
 
     @Test
     void rechazaHoraSinDia() {
-        assertThatThrownBy(() -> new CriteriosBusqueda(id(1), null, null, null, null, LocalTime.NOON, false, null))
+        UUID id1 = id(1);
+        assertThatThrownBy(() -> new CriteriosBusqueda(id1, null, null, null, null, LocalTime.NOON, false, null))
                 .isInstanceOf(SolicitudInvalidaException.class);
     }
 

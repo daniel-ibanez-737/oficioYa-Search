@@ -68,10 +68,10 @@ public class InterpretadorIAViaOrquestador implements InterpretadorLenguajeNatur
         try {
             JsonNode json = JSON.readTree(extraerJson(respuesta));
             JsonNode oficioId = json.path("oficioId");
-            if (!oficioId.isTextual() || oficioId.asText().isBlank()) {
+            if (!oficioId.isString() || oficioId.asString().isBlank()) {
                 return InterpretacionIA.requiereMasDetalle();
             }
-            UUID id = UUID.fromString(oficioId.asText().trim());
+            UUID id = UUID.fromString(oficioId.asString().trim());
             double confianza = json.path("confianza").asDouble(0);
             return catalogo.stream()
                     .filter(o -> id.equals(o.id()))
