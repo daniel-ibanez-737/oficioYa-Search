@@ -83,8 +83,11 @@ public class InterpretadorIAViaOrquestador implements InterpretadorLenguajeNatur
     }
 
     private static String extraerJson(String respuesta) {
-        int inicio = respuesta == null ? -1 : respuesta.indexOf('{');
-        int fin = respuesta == null ? -1 : respuesta.lastIndexOf('}');
+        if (respuesta == null) {
+            throw new IllegalArgumentException("La respuesta no contiene JSON");
+        }
+        int inicio = respuesta.indexOf('{');
+        int fin = respuesta.lastIndexOf('}');
         if (inicio < 0 || fin < inicio) {
             throw new IllegalArgumentException("La respuesta no contiene JSON");
         }
