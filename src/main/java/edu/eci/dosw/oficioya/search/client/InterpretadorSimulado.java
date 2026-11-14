@@ -16,7 +16,7 @@ import edu.eci.dosw.oficioya.search.dto.OficioDTO;
 import edu.eci.dosw.oficioya.search.service.InterpretadorLenguajeNatural;
 
 /**
- * Intérprete simulado por palabras clave (modo {@code oficioya.ia.modo=simulado}, por defecto en el sprint 3).
+ * Intérprete simulado por palabras clave (modo {@code oficioya.ia.modo=simulado}, el modo por defecto).
  * Identifica el oficio buscando el nombre del oficio o palabras asociadas en el texto. Se reemplaza por
  * {@link InterpretadorIAViaOrquestador} cuando el Orchestrator exponga la ruta hacia la IA (sprint 4).
  */
