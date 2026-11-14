@@ -20,7 +20,7 @@ oficioya:
       reputaciones: /api/v1/reputation/reputaciones
       interpretacion-ia: /api/ia/interpretaciones
   ia:
-    # simulado: identifica el oficio por palabras clave (sprint 3).
+    # simulado: identifica el oficio por palabras clave, sin IA.
     # orquestador: consulta la IA (Gemini) a través del Orchestrator (sprint 4).
     modo: ${IA_MODO:simulado}
     umbral-confianza: 0.6
