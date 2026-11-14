@@ -10,7 +10,7 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Genera JWT HS256 de desarrollo para cada rol (mismo secreto que application.yml).",
+          "// Genera JWT HS256 de desarrollo para cada rol, igual que Identity: secreto en Base64, roles sin prefijo y\n// sub UUID (mismo secreto que application.yml).",
           "// Así no hay que pegar tokens a mano. En producción los emite Identity (Squad 1).",
           "const cripto = require('crypto-js');",
           "function b64url(palabras) {",
@@ -20,13 +20,13 @@
           "    const ahora = Math.floor(Date.now() / 1000);",
           "    const cabecera = b64url(cripto.enc.Utf8.parse(JSON.stringify({ alg: 'HS256', typ: 'JWT' })));",
           "    const cuerpo = b64url(cripto.enc.Utf8.parse(JSON.stringify({ sub: String(sub), roles: [rol], iat: ahora, exp: ahora + 3600 })));",
-          "    const firma = b64url(cripto.HmacSHA256(cabecera + '.' + cuerpo, pm.collectionVariables.get('jwtSecret')));",
+          "    const firma = b64url(cripto.HmacSHA256(cabecera + '.' + cuerpo, cripto.enc.Base64.parse(pm.collectionVariables.get('jwtSecret'))));",
           "    return cabecera + '.' + cuerpo + '.' + firma;",
           "}",
-          "pm.collectionVariables.set('token_contratante', token(pm.collectionVariables.get('contratanteId'), 'ROLE_CONTRATANTE'));",
-          "pm.collectionVariables.set('token_trabajador', token(pm.collectionVariables.get('trabajadorId'), 'ROLE_TRABAJADOR'));",
-          "pm.collectionVariables.set('token_admin', token(1, 'ROLE_ADMINISTRADOR'));",
-          "pm.collectionVariables.set('token_sistema', token(0, 'ROLE_SISTEMA'));"
+          "pm.collectionVariables.set('token_contratante', token(pm.collectionVariables.get('contratanteId'), 'CONTRATANTE'));",
+          "pm.collectionVariables.set('token_trabajador', token(pm.collectionVariables.get('trabajadorId'), 'TRABAJADOR'));",
+          "pm.collectionVariables.set('token_admin', token('00000000-0000-0000-0000-000000000900', 'ADMIN'));",
+          "pm.collectionVariables.set('token_sistema', token('00000000-0000-0000-0000-000000000999', 'SISTEMA'));"
         ]
       }
     }
@@ -38,15 +38,15 @@
     },
     {
       "key": "jwtSecret",
-      "value": "cambiar-este-secreto-de-desarrollo-de-al-menos-32-bytes"
+      "value": "Y2FtYmlhci1lc3RlLXNlY3JldG8tZGUtZGVzYXJyb2xsby1kZS1hbC1tZW5vcy0zMi1ieXRlcw=="
     },
     {
       "key": "trabajadorId",
-      "value": "101"
+      "value": "00000000-0000-0000-0000-000000000101"
     },
     {
       "key": "contratanteId",
-      "value": "201"
+      "value": "00000000-0000-0000-0000-000000000201"
     }
   ],
   "item": [
@@ -101,7 +101,7 @@
               }
             ],
             "url": {
-              "raw": "{{searchUrl}}/api/v1/search/oficios/1/trabajadores",
+              "raw": "{{searchUrl}}/api/v1/search/oficios/00000000-0000-0000-0000-000000000001/trabajadores",
               "host": [
                 "{{searchUrl}}"
               ],
@@ -110,7 +110,7 @@
                 "v1",
                 "search",
                 "oficios",
-                "1",
+                "00000000-0000-0000-0000-000000000001",
                 "trabajadores"
               ]
             },
@@ -142,7 +142,7 @@
               }
             ],
             "url": {
-              "raw": "{{searchUrl}}/api/v1/search/oficios/1/trabajadores?precioMaximo=50000&soloDisponibleAhora=true&diaSemana=MONDAY&hora=10:00",
+              "raw": "{{searchUrl}}/api/v1/search/oficios/00000000-0000-0000-0000-000000000001/trabajadores?precioMaximo=50000&soloDisponibleAhora=true&diaSemana=MONDAY&hora=10:00",
               "host": [
                 "{{searchUrl}}"
               ],
@@ -151,7 +151,7 @@
                 "v1",
                 "search",
                 "oficios",
-                "1",
+                "00000000-0000-0000-0000-000000000001",
                 "trabajadores"
               ],
               "query": [

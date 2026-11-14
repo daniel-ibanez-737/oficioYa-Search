@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.client;
 
+import java.util.UUID;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +57,7 @@ public class InterpretadorIAViaOrquestador implements InterpretadorLenguajeNatur
                 %s
 
                 Responde solo con JSON, sin texto adicional, con este formato:
-                {"oficioId": <id o null>, "oficio": "<nombre o null>", "confianza": <número entre 0 y 1>}
+                {"oficioId": "<id o null>", "oficio": "<nombre o null>", "confianza": <número entre 0 y 1>}
                 Si no es posible identificar un único oficio, usa oficioId null.
 
                 Descripción de la persona: "%s"
@@ -66,13 +68,13 @@ public class InterpretadorIAViaOrquestador implements InterpretadorLenguajeNatur
         try {
             JsonNode json = JSON.readTree(extraerJson(respuesta));
             JsonNode oficioId = json.path("oficioId");
-            if (!oficioId.isNumber()) {
+            if (!oficioId.isTextual() || oficioId.asText().isBlank()) {
                 return InterpretacionIA.requiereMasDetalle();
             }
-            long id = oficioId.asLong();
+            UUID id = UUID.fromString(oficioId.asText().trim());
             double confianza = json.path("confianza").asDouble(0);
             return catalogo.stream()
-                    .filter(o -> o.id() == id)
+                    .filter(o -> id.equals(o.id()))
                     .findFirst()
                     .map(o -> InterpretacionIA.identificado(o.id(), o.nombre(), confianza))
                     .orElseGet(InterpretacionIA::requiereMasDetalle);

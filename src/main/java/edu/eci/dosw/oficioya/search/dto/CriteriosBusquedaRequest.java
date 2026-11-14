@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.dto;
 
+import java.util.UUID;
+
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -40,7 +42,7 @@ public record CriteriosBusquedaRequest(
         FranjaHoraria franjaHoraria,
         OrdenCalificacion orden) {
 
-    public CriteriosBusqueda aCriterios(Long oficioId) {
+    public CriteriosBusqueda aCriterios(UUID oficioId) {
         return new CriteriosBusqueda(oficioId, barrioIds, precioMinimo, precioMaximo, diaSemana, hora,
                 Boolean.TRUE.equals(soloDisponibleAhora), calificacionMinima, franjaHoraria, orden);
     }

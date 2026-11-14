@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.domain;
 
+import java.util.UUID;
+
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -20,7 +22,7 @@ import edu.eci.dosw.oficioya.search.exception.SolicitudInvalidaException;
  * El orden por calificación es de mayor a menor si no se indica otro.
  */
 @SuppressWarnings("java:S107")
-public record CriteriosBusqueda(Long oficioId, List<Long> barrioIds, BigDecimal precioMinimo, BigDecimal precioMaximo,
+public record CriteriosBusqueda(UUID oficioId, List<Long> barrioIds, BigDecimal precioMinimo, BigDecimal precioMaximo,
                                 DayOfWeek diaSemana, LocalTime hora, boolean soloDisponibleAhora,
                                 Double calificacionMinima, FranjaHoraria franjaHoraria, OrdenCalificacion orden) {
 
@@ -35,21 +37,21 @@ public record CriteriosBusqueda(Long oficioId, List<Long> barrioIds, BigDecimal 
         }
     }
 
-    public CriteriosBusqueda(Long oficioId, List<Long> barrioIds, BigDecimal precioMinimo, BigDecimal precioMaximo,
+    public CriteriosBusqueda(UUID oficioId, List<Long> barrioIds, BigDecimal precioMinimo, BigDecimal precioMaximo,
                              DayOfWeek diaSemana, LocalTime hora, boolean soloDisponibleAhora,
                              Double calificacionMinima) {
         this(oficioId, barrioIds, precioMinimo, precioMaximo, diaSemana, hora, soloDisponibleAhora,
                 calificacionMinima, null, null);
     }
 
-    public static CriteriosBusqueda soloOficio(Long oficioId) {
+    public static CriteriosBusqueda soloOficio(UUID oficioId) {
         return new CriteriosBusqueda(oficioId, List.of(), null, null, null, null, false, null);
     }
 
     /**
      * Copia de los criterios para otro oficio (se usa cuando la IA identifica el oficio).
      */
-    public CriteriosBusqueda conOficio(Long nuevoOficioId) {
+    public CriteriosBusqueda conOficio(UUID nuevoOficioId) {
         return new CriteriosBusqueda(nuevoOficioId, barrioIds, precioMinimo, precioMaximo, diaSemana, hora,
                 soloDisponibleAhora, calificacionMinima, franjaHoraria, orden);
     }

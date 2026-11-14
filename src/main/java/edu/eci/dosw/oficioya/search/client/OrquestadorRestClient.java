@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.client;
 
+import java.util.UUID;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import edu.eci.dosw.oficioya.search.client.worker.OficioWorkerDTO;
+import edu.eci.dosw.oficioya.search.client.worker.TrabajadorWorkerDTO;
 import edu.eci.dosw.oficioya.search.dto.OficioDTO;
 import edu.eci.dosw.oficioya.search.dto.ReputacionDTO;
 import edu.eci.dosw.oficioya.search.dto.RespuestaIADTO;
@@ -22,7 +26,8 @@ import edu.eci.dosw.oficioya.search.exception.IntegracionException;
 
 /**
  * Implementación REST de {@link OrquestadorClient}: todas las llamadas van al Orchestrator, que las reenvía
- * al dominio correspondiente. Las rutas son configurables (pendientes de confirmar con Squad 1).
+ * al dominio correspondiente. Las rutas son configurables. Los formatos de Worker son los de su API real
+ * ({@code GET /api/v1/workers} y {@code GET /api/v1/trades}).
  */
 @Component
 @Profile("!demo")
@@ -49,13 +54,14 @@ public class OrquestadorRestClient implements OrquestadorClient {
     }
 
     @Override
-    public List<TrabajadorDTO> buscarTrabajadoresActivos(Long oficioId) {
+    public List<TrabajadorDTO> buscarTrabajadoresActivos(UUID oficioId) {
         try {
-            List<TrabajadorDTO> trabajadores = restClient.get()
-                    .uri(uri -> uri.path(rutaTrabajadores).queryParam("oficioId", oficioId).build())
+            // Worker ya devuelve solo los trabajadores ACTIVOS; tradeId filtra por oficio principal o secundario.
+            List<TrabajadorWorkerDTO> trabajadores = restClient.get()
+                    .uri(uri -> uri.path(rutaTrabajadores).queryParam("tradeId", oficioId).build())
                     .retrieve()
-                    .body(new ParameterizedTypeReference<List<TrabajadorDTO>>() { });
-            return trabajadores == null ? List.of() : trabajadores;
+                    .body(new ParameterizedTypeReference<List<TrabajadorWorkerDTO>>() { });
+            return trabajadores == null ? List.of() : trabajadores.stream().map(TrabajadorWorkerDTO::aTrabajador).toList();
         } catch (RestClientException e) {
             throw new IntegracionException("No fue posible consultar los trabajadores en Worker", e);
         }
@@ -64,18 +70,19 @@ public class OrquestadorRestClient implements OrquestadorClient {
     @Override
     public List<OficioDTO> obtenerOficios() {
         try {
-            List<OficioDTO> oficios = restClient.get()
+            List<OficioWorkerDTO> oficios = restClient.get()
                     .uri(uri -> uri.path(rutaOficios).build())
                     .retrieve()
-                    .body(new ParameterizedTypeReference<List<OficioDTO>>() { });
-            return oficios == null ? List.of() : oficios;
+                    .body(new ParameterizedTypeReference<List<OficioWorkerDTO>>() { });
+            return oficios == null ? List.of()
+                    : oficios.stream().filter(OficioWorkerDTO::active).map(OficioWorkerDTO::aOficio).toList();
         } catch (RestClientException e) {
             throw new IntegracionException("No fue posible consultar el catálogo de oficios en Worker", e);
         }
     }
 
     @Override
-    public Map<Long, ReputacionDTO> obtenerReputaciones(Collection<Long> trabajadorIds) {
+    public Map<UUID, ReputacionDTO> obtenerReputaciones(Collection<UUID> trabajadorIds) {
         if (trabajadorIds.isEmpty()) {
             return Map.of();
         }

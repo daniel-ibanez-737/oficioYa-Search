@@ -1,5 +1,9 @@
 package edu.eci.dosw.oficioya.search.service;
 
+import java.util.UUID;
+
+import static edu.eci.dosw.oficioya.search.IdsDePrueba.id;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,16 +38,16 @@ import edu.eci.dosw.oficioya.search.exception.SolicitudInvalidaException;
 
 class BusquedaServiceTest {
 
-    private static final long PLOMERIA = 1L;
+    private static final UUID PLOMERIA = id(1);
     private static final List<OficioDTO> CATALOGO = List.of(new OficioDTO(PLOMERIA, "Plomería", null));
 
     private OrquestadorClient orquestador;
     private InterpretadorLenguajeNatural interpretador;
     private BusquedaService servicio;
 
-    private static TrabajadorDTO trabajador(long id, long oficioPrincipal, List<Long> secundarios, int tarifa,
+    private static TrabajadorDTO trabajador(long numero, UUID oficioPrincipal, List<UUID> secundarios, int tarifa,
                                             boolean disponibleAhora, Integer trabajos) {
-        return new TrabajadorDTO(id, "Trabajador " + id, null, oficioPrincipal, "Oficio " + oficioPrincipal,
+        return new TrabajadorDTO(id(numero), "Trabajador " + numero, null, oficioPrincipal, "Oficio " + oficioPrincipal,
                 secundarios, List.of(10L), "Chapinero", BigDecimal.valueOf(tarifa), disponibleAhora,
                 List.of(new DisponibilidadDTO(DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(17, 0))), trabajos);
     }
@@ -56,12 +60,12 @@ class BusquedaServiceTest {
         when(orquestador.obtenerOficios()).thenReturn(CATALOGO);
         when(orquestador.buscarTrabajadoresActivos(PLOMERIA)).thenReturn(List.of(
                 trabajador(1, PLOMERIA, List.of(), 40_000, true, 10),
-                trabajador(2, 9L, List.of(PLOMERIA), 60_000, false, 50),
+                trabajador(2, id(9), List.of(PLOMERIA), 60_000, false, 50),
                 trabajador(3, PLOMERIA, null, 30_000, true, null),
-                trabajador(4, 9L, List.of(8L), 20_000, true, 5)));
+                trabajador(4, id(9), List.of(id(8)), 20_000, true, 5)));
         when(orquestador.obtenerReputaciones(anyList())).thenReturn(Map.of(
-                1L, new ReputacionDTO(1L, 4.5, 10),
-                2L, new ReputacionDTO(2L, 4.9, 30)));
+                id(1), new ReputacionDTO(id(1), 4.5, 10),
+                id(2), new ReputacionDTO(id(2), 4.9, 30)));
     }
 
     @Test
@@ -71,7 +75,7 @@ class BusquedaServiceTest {
         assertThat(respuesta.tipo()).isEqualTo(TipoBusqueda.OFICIO);
         // El 4 no ofrece plomería; el 3 no tiene reseñas (calificación 0) y queda de último.
         assertThat(respuesta.resultados()).extracting(ResultadoBusquedaResponse::trabajadorId)
-                .containsExactly(2L, 1L, 3L);
+                .containsExactly(id(2), id(1), id(3));
         assertThat(respuesta.resultados()).extracting(ResultadoBusquedaResponse::posicion).containsExactly(1, 2, 3);
         assertThat(respuesta.total()).isEqualTo(3);
     }
@@ -83,7 +87,7 @@ class BusquedaServiceTest {
 
         BusquedaResponse respuesta = servicio.buscarPorOficio("u1", criterios);
 
-        assertThat(respuesta.resultados()).extracting(ResultadoBusquedaResponse::trabajadorId).containsExactly(1L);
+        assertThat(respuesta.resultados()).extracting(ResultadoBusquedaResponse::trabajadorId).containsExactly(id(1));
     }
 
     @Test
@@ -105,7 +109,7 @@ class BusquedaServiceTest {
         assertThat(respuesta.estado()).isEqualTo(EstadoInterpretacion.OFICIO_IDENTIFICADO);
         assertThat(respuesta.oficioIdentificado()).isEqualTo("Plomería");
         // máximo 2 sugerencias, las de mayor reputación
-        assertThat(respuesta.resultados()).extracting(ResultadoBusquedaResponse::trabajadorId).containsExactly(2L, 1L);
+        assertThat(respuesta.resultados()).extracting(ResultadoBusquedaResponse::trabajadorId).containsExactly(id(2), id(1));
     }
 
     @Test

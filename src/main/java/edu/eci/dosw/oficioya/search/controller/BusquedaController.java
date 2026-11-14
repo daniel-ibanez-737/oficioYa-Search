@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.controller;
 
+import java.util.UUID;
+
 import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,7 +58,7 @@ public class BusquedaController {
      */
     @Operation(summary = "Buscar trabajadores por oficio (principal o secundario) con filtros")
     @GetMapping("/oficios/{oficioId}/trabajadores")
-    public BusquedaResponse buscarPorOficio(@PathVariable Long oficioId,
+    public BusquedaResponse buscarPorOficio(@PathVariable UUID oficioId,
                                             @Valid @ModelAttribute CriteriosBusquedaRequest criterios,
                                             @Parameter(hidden = true) @AuthenticationPrincipal Jwt jwt) {
         return busquedaService.buscarPorOficio(usuario(jwt), criterios.aCriterios(oficioId));

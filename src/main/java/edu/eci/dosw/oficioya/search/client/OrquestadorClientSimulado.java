@@ -1,5 +1,7 @@
 package edu.eci.dosw.oficioya.search.client;
 
+import java.util.UUID;
+
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -26,12 +28,12 @@ import edu.eci.dosw.oficioya.search.dto.TrabajadorDTO;
 @Profile("demo")
 public class OrquestadorClientSimulado implements OrquestadorClient {
 
-    static final long PLOMERIA = 1L;
-    static final long ELECTRICIDAD = 2L;
-    static final long CARPINTERIA = 3L;
-    static final long CLASES = 4L;
-    static final long MASCOTAS = 5L;
-    static final long TECNICO = 6L;
+    static final UUID PLOMERIA = id(1);
+    static final UUID ELECTRICIDAD = id(2);
+    static final UUID CARPINTERIA = id(3);
+    static final UUID CLASES = id(4);
+    static final UUID MASCOTAS = id(5);
+    static final UUID TECNICO = id(6);
 
     private static final long CHAPINERO = 10L;
     private static final long USAQUEN = 11L;
@@ -60,38 +62,43 @@ public class OrquestadorClientSimulado implements OrquestadorClient {
             new DisponibilidadDTO(DayOfWeek.SUNDAY, LocalTime.of(9, 0), LocalTime.of(13, 0)));
 
     private static final List<TrabajadorDTO> TRABAJADORES = List.of(
-            trabajador(101L, "Carlos Martínez", PLOMERIA, "Plomería", List.of(TECNICO), List.of(CHAPINERO, USAQUEN),
+            trabajador(id(101), "Carlos Martínez", PLOMERIA, "Plomería", List.of(TECNICO), List.of(CHAPINERO, USAQUEN),
                     "Chapinero", 45_000, true, ENTRE_SEMANA, 128),
-            trabajador(102L, "Lucía Fernández", ELECTRICIDAD, "Electricidad", List.of(), List.of(CHAPINERO),
+            trabajador(id(102), "Lucía Fernández", ELECTRICIDAD, "Electricidad", List.of(), List.of(CHAPINERO),
                     "Chapinero", 50_000, true, ENTRE_SEMANA, 96),
-            trabajador(103L, "Miguel Torres", CARPINTERIA, "Carpintería", List.of(), List.of(SUBA), "Suba",
+            trabajador(id(103), "Miguel Torres", CARPINTERIA, "Carpintería", List.of(), List.of(SUBA), "Suba",
                     60_000, false, FIN_DE_SEMANA, 84),
-            trabajador(104L, "Andrea Gómez", PLOMERIA, "Plomería", List.of(), List.of(KENNEDY), "Kennedy",
+            trabajador(id(104), "Andrea Gómez", PLOMERIA, "Plomería", List.of(), List.of(KENNEDY), "Kennedy",
                     38_000, false, FIN_DE_SEMANA, 41),
-            trabajador(105L, "Jorge Rodríguez", TECNICO, "Técnico de electrodomésticos", List.of(PLOMERIA, ELECTRICIDAD),
+            trabajador(id(105), "Jorge Rodríguez", TECNICO, "Técnico de electrodomésticos", List.of(PLOMERIA, ELECTRICIDAD),
                     List.of(USAQUEN, SUBA), "Usaquén", 70_000, true, ENTRE_SEMANA_Y_NOCHES, 63),
-            trabajador(106L, "Paula Ramírez", CLASES, "Profesor particular", List.of(), List.of(CHAPINERO, KENNEDY),
+            trabajador(id(106), "Paula Ramírez", CLASES, "Profesor particular", List.of(), List.of(CHAPINERO, KENNEDY),
                     "Chapinero", 35_000, true, FIN_DE_SEMANA, 22),
-            trabajador(107L, "Sofía Herrera", MASCOTAS, "Cuidado de mascotas", List.of(), List.of(USAQUEN),
+            trabajador(id(107), "Sofía Herrera", MASCOTAS, "Cuidado de mascotas", List.of(), List.of(USAQUEN),
                     "Usaquén", 25_000, true, FIN_DE_SEMANA, 57));
 
-    private static final Map<Long, ReputacionDTO> REPUTACIONES = List.of(
-                    new ReputacionDTO(101L, 4.9, 128), new ReputacionDTO(102L, 4.9, 96),
-                    new ReputacionDTO(103L, 4.8, 84), new ReputacionDTO(104L, 4.2, 41),
-                    new ReputacionDTO(105L, 4.6, 63), new ReputacionDTO(106L, 4.7, 22),
-                    new ReputacionDTO(107L, 4.9, 57))
+    private static final Map<UUID, ReputacionDTO> REPUTACIONES = List.of(
+                    new ReputacionDTO(id(101), 4.9, 128), new ReputacionDTO(id(102), 4.9, 96),
+                    new ReputacionDTO(id(103), 4.8, 84), new ReputacionDTO(id(104), 4.2, 41),
+                    new ReputacionDTO(id(105), 4.6, 63), new ReputacionDTO(id(106), 4.7, 22),
+                    new ReputacionDTO(id(107), 4.9, 57))
             .stream().collect(Collectors.toMap(ReputacionDTO::trabajadorId, Function.identity()));
 
+    /** Ids de demo legibles: id(101) = 00000000-0000-0000-0000-000000000101, igual que en Reputation. */
+    static UUID id(long numero) {
+        return UUID.fromString("00000000-0000-0000-0000-%012d".formatted(numero));
+    }
+
     @SuppressWarnings("java:S107")
-    private static TrabajadorDTO trabajador(Long id, String nombre, long oficioId, String oficio, List<Long> secundarios,
+    private static TrabajadorDTO trabajador(UUID id, String nombre, UUID oficioId, String oficio, List<UUID> secundarios,
                                             List<Long> barrios, String zona, int tarifa, boolean disponibleAhora,
                                             List<DisponibilidadDTO> disponibilidad, int trabajos) {
-        return new TrabajadorDTO(id, nombre, "https://picsum.photos/seed/" + id + "/200", oficioId, oficio,
+        return new TrabajadorDTO(id, nombre, "https://picsum.photos/seed/" + id.getLeastSignificantBits() + "/200", oficioId, oficio,
                 secundarios, barrios, zona, BigDecimal.valueOf(tarifa), disponibleAhora, disponibilidad, trabajos);
     }
 
     @Override
-    public List<TrabajadorDTO> buscarTrabajadoresActivos(Long oficioId) {
+    public List<TrabajadorDTO> buscarTrabajadoresActivos(UUID oficioId) {
         return TRABAJADORES.stream().filter(t -> t.ofrece(oficioId)).toList();
     }
 
@@ -101,7 +108,7 @@ public class OrquestadorClientSimulado implements OrquestadorClient {
     }
 
     @Override
-    public Map<Long, ReputacionDTO> obtenerReputaciones(Collection<Long> trabajadorIds) {
+    public Map<UUID, ReputacionDTO> obtenerReputaciones(Collection<UUID> trabajadorIds) {
         return trabajadorIds.stream().filter(REPUTACIONES::containsKey)
                 .collect(Collectors.toMap(Function.identity(), REPUTACIONES::get));
     }
